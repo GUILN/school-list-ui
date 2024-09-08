@@ -10,14 +10,36 @@ function App() {
 
   return (
     <>
-      <div className="text-3xl font-bold underline my-4">
-        Hello Tailwind!
-      </div>
-      <div className="flex justify-center my-4">
-        <Input disabled={true} value={count} />
-      </div>
-      <div className="flex justify-center my-4">
-        <Button onClick={() => setCount(count + 1)}>Click Me!</Button>
+      <div className="w-full h-svh max-h-svh flex">
+        <div className="h-full flex-[0.3]">
+          {/* left side menu */}
+          Side menu
+        </div>
+        <div className="h-full flex-1">
+          {/* main content area */}
+          <div className="flex h-full flex-col justify-between overflow-y-scroll">
+            <div className="sticky top-0 w-full">
+              <div className="bg-orange-500 py-5">
+                <h1 className="text-center text-xl">Header</h1>
+              </div>
+              {/* header */}
+            </div>
+            <div>
+              {/* content */}
+              <div className="flex justify-center my-4">
+                <Input disabled={true} value={count} />
+              </div>
+              <div className="flex justify-center my-4">
+                <Button onClick={() => setCount(count + 1)}>Click Me!</Button>
+              </div>
+            </div>
+            <div>
+              Footer
+              {/* footer */}
+            </div>
+          </div>
+          
+        </div> 
       </div>
     </>
   )
