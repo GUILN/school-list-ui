@@ -26,6 +26,7 @@ function App() {
             </div>
             <div>
               {/* content */}
+              <h1 className="text-center text-xl">Content</h1>
               <div className="flex justify-center my-4">
                 <Input disabled={true} value={count} />
               </div>
@@ -33,8 +34,10 @@ function App() {
                 <Button onClick={() => setCount(count + 1)}>Click Me!</Button>
               </div>
             </div>
-            <div>
-              Footer
+            <div className="w-full">
+              <div className="bg-yellow-600 py-12">
+                <h1 className="text-center text-xl">Footer</h1>
+              </div>
               {/* footer */}
             </div>
           </div>
