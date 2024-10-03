@@ -1,17 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { Button } from './components/ui/button'
-import { Input } from './components/ui/input'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
       <div className="w-full h-svh max-h-svh flex">
-        <div className="h-full flex-[0.3]">
+        <div className="h-full flex-[0.2] bg-blue-300">
           {/* left side menu */}
           Side menu
         </div>
@@ -27,12 +21,6 @@ function App() {
             <div>
               {/* content */}
               <h1 className="text-center text-xl">Content</h1>
-              <div className="flex justify-center my-4">
-                <Input disabled={true} value={count} />
-              </div>
-              <div className="flex justify-center my-4">
-                <Button onClick={() => setCount(count + 1)}>Click Me!</Button>
-              </div>
             </div>
             <div className="w-full">
               <div className="bg-yellow-600 py-12">
