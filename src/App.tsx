@@ -1,7 +1,6 @@
-import './App.css'
+import "./App.css";
 
 function App() {
-
   return (
     <>
       <div className="w-full h-svh max-h-svh flex">
@@ -33,10 +32,10 @@ function App() {
             {/* Botton Navigation for Small Screens */}
             <h1 className="text-center text-xl">Bottom Navigation</h1>
           </div>
-        </div> 
+        </div>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

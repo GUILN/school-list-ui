@@ -19,13 +19,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    
-    /* Added from shadcn ui doc */ 
+
+    /* Added from shadcn ui doc */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
-
   },
   "include": ["src"]
 }
