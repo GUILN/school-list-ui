@@ -5,7 +5,7 @@ const MainLayout = () => {
   return (
     <>
       <div className="w-full h-svh max-h-svh flex">
-        <div className="hidden h-full flex-[0.2] bg-blue-300 md:block">
+        <div className="hidden h-full flex-[0.2] bg-secondary md:block">
           {/* left side menu */}
           Side menu
         </div>
@@ -14,8 +14,8 @@ const MainLayout = () => {
           <div className="flex h-full flex-col justify-between overflow-y-scroll">
             <div className="sticky top-0 w-full">
               {/* header */}
-              <div className="bg-orange-500 py-5">
-                <h1 className="text-center text-xl">Header</h1>
+              <div className="bg-primary py-5">
+                <h1 className="text-center text-xl text-secondary">Header</h1>
               </div>
             </div>
             <div>
@@ -32,7 +32,7 @@ const MainLayout = () => {
             </div>
             <div className="w-full">
               {/* footer */}
-              <div className="bg-yellow-600 py-12">
+              <div className="bg-secondary py-12">
                 <h1 className="text-center text-xl">Footer</h1>
               </div>
             </div>
