@@ -1,5 +1,6 @@
 import routes from "@/routes";
 import { Route, Routes } from "react-router-dom";
+import SideMenu from "./side-menu";
 
 const MainLayout = () => {
   return (
@@ -7,7 +8,7 @@ const MainLayout = () => {
       <div className="w-full h-svh max-h-svh flex">
         <div className="hidden h-full flex-[0.2] bg-secondary md:block">
           {/* left side menu */}
-          Side menu
+          <SideMenu />
         </div>
         <div className="h-full flex-1">
           {/* main content area */}
