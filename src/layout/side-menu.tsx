@@ -17,7 +17,7 @@ const SideMenuItem = (props: {
       </div>
       <Link
         className="bg-accent
-             text-lg text-center
+             text-center
               hover:text-blue-400 hover:cursor-pointer rounded-sm mt-4 px-16 my-8 flex-1"
         to={path}
       >
@@ -30,7 +30,7 @@ const SideMenuItem = (props: {
 const SideMenu = () => {
   return (
     <div className="pt-40">
-      <ul className="flex flex-col grow divide-y-2 hover:divide-y-8">
+      <ul className="flex flex-col grow divide-y-2 hover:divide-y-4">
         {routes.map((route, i) => (
           <SideMenuItem
             name={route.name}
