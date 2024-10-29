@@ -8,7 +8,6 @@ const SideMenuItem = (props: {
   elementIconName: string;
 }) => {
   const { elementIconName, name, path } = props;
-  // @ts-expect-error it should follow lucide icon names
   const LucideIcon = icons[elementIconName] ?? icons.House;
   return (
     <li className="text-center grow h-max py-2 flex">
