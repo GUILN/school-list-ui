@@ -42,7 +42,7 @@ const MainLayout = () => {
             <div className="w-full">
               {/* footer */}
               <div className="bg-secondary py-12">
-                <h1 className="text-center text-xl">Footer</h1>
+                <h1 className="text-center text-xl">Lista de Escolas</h1>
               </div>
             </div>
           </div>
