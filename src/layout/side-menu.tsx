@@ -28,8 +28,8 @@ const SideMenuItem = (props: {
 
 const SideMenu = () => {
   return (
-    <div className="pt-40">
-      <ul className="flex flex-col grow divide-y-2 hover:divide-y-4">
+    <div className="pt-20">
+      <ul className="flex flex-col grow divide-y-2">
         {routes.map((route, i) => (
           <SideMenuItem
             name={route.name}

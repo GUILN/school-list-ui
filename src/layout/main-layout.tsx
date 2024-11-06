@@ -12,13 +12,9 @@ const MainLayout = () => {
   return (
     <>
       <div className="w-full h-svh max-h-svh flex">
-        <div className="hidden h-full flex-[0.2] bg-secondary md:block">
-          {/* left side menu */}
-          <SideMenu />
-        </div>
         <div className="h-full flex-1">
           {/* main content area */}
-          <div className="flex h-full flex-col justify-between overflow-y-scroll">
+          <div className="flex flex-col justify-between overflow-y-scroll h-full">
             <div className="sticky top-0 w-full">
               {/* header */}
               <div className="bg-primary py-5">
@@ -27,22 +23,22 @@ const MainLayout = () => {
                 </h1>
               </div>
             </div>
-            <div>
-              {/* content */}
-              <Routes>
-                {routes.map((route, i) => (
-                  <Route
-                    path={route.path}
-                    key={i}
-                    Component={route.component}
-                  />
-                ))}
-              </Routes>
-            </div>
-            <div className="w-full">
-              {/* footer */}
-              <div className="bg-secondary py-12">
-                <h1 className="text-center text-xl">Lista de Escolas</h1>
+            <div className="flex flex-1">
+              <div className="hidden h-full flex-[0.2] bg-secondary md:block">
+                {/* left side menu */}
+                <SideMenu />
+              </div>
+              <div className="h-full flex-1">
+                {/* content */}
+                <Routes>
+                  {routes.map((route, i) => (
+                    <Route
+                      path={route.path}
+                      key={i}
+                      Component={route.component}
+                    />
+                  ))}
+                </Routes>
               </div>
             </div>
           </div>
