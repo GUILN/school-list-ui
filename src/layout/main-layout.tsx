@@ -3,8 +3,8 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import SideMenu from "./side-menu";
 import { useEffect, useState } from "react";
 
-const routesDict: Map<string, string> = new Map<string, string>();
-routes.forEach((route) => (routesDict[route.path.toString()] = route.name));
+const routesDict: Record<string, string> = {};
+routes.forEach((route) => (routesDict[route.path] = route.name));
 const MainLayout = () => {
   const [headerTitle, setHeaderTitle] = useState("Title");
   const location = useLocation();
@@ -18,7 +18,10 @@ const MainLayout = () => {
             <div className="sticky top-0 w-full">
               {/* header */}
               <div className="bg-primary py-5">
-                <h1 className="text-center text-xl text-secondary">
+                <h1
+                  className="text-center text-xl text-secondary"
+                  data-testid="main-header-title"
+                >
                   {headerTitle}
                 </h1>
               </div>

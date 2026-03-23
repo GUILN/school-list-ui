@@ -10,7 +10,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, bypassAuth } = useAuth();
-  const isDevMode = import.meta.env.DEV;
+  const isDevMode = false;
 
   const from = location.state?.from?.pathname || "/";
 

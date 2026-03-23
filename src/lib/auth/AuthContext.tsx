@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token"),
   );
-  const [isDevMode, setIsDevMode] = useState(import.meta.env.DEV);
+  const [isDevMode, setIsDevMode] = useState(false);
 
   useEffect(() => {
     if (token) {
