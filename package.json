@@ -68,5 +68,10 @@
       "npm run format:check",
       "npm run lint:check"
     ]
+  },
+  "run-tests": {
+    "**/*": [
+      "npm run test"
+    ]
   }
 }
