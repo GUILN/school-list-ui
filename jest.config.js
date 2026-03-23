@@ -28,4 +28,12 @@ export default {
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
+  coverageThreshold: {
+    global: {
+      lines: 75,
+      functions: 55,
+      branches: 55,
+      statements: 75,
+    },
+  },
 };
