@@ -1,5 +1,24 @@
 import "@testing-library/jest-dom";
 
+// Suppress React Router console warnings during tests
+const originalWarn = console.warn;
+beforeAll(() => {
+  console.warn = (...args) => {
+    if (
+      typeof args[0] === "string" &&
+      (args[0].includes("Matched leaf route at location") ||
+        args[0].includes("No routes matched location"))
+    ) {
+      return;
+    }
+    originalWarn.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
+
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,

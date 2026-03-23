@@ -36,4 +36,7 @@ export default {
       statements: 75,
     },
   },
+  // Silence console warnings during tests
+  silent: false,
+  verbose: false,
 };
