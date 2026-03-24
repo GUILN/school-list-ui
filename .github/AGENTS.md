@@ -4,6 +4,13 @@ This workspace has specialized agents for different development tasks.
 
 ## Available Agents
 
+### feature-planner
+
+**Specialization**: GitHub issue analysis and task breakdown
+**Use when**: GitHub issue analysis, feature breakdown, task planning, project kanban management, breaking down large issues into smaller tasks, planning development work, accessing GitHub project boards
+
+Analyzes GitHub issues and features, understands codebase context, and breaks down complex work into actionable tasks that can be delegated to specialist agents.
+
 ### test-fixer
 
 **Specialization**: React Testing Library and Jest test fixing
@@ -27,6 +34,8 @@ Runs tests and delegates any failures to the test-fixer agent.
 
 ## Usage Examples
 
+- **"Analyze this GitHub issue: https://github.com/..."** → Invokes `feature-planner` for task breakdown
+- **"Break down this feature into tasks"** → Invokes `feature-planner` for planning
 - **"Fix my failing tests"** → Invokes `test-fixer` directly
 - **"My pipeline is failing"** → Invokes `pipeline-doctor` who diagnoses and delegates
 - **"Run the test suite"** → Invokes `test-runner` who executes and handles failures
@@ -34,8 +43,11 @@ Runs tests and delegates any failures to the test-fixer agent.
 ## Agent Relationships
 
 ```
+feature-planner → test-fixer (for test-related tasks)
+feature-planner → pipeline-doctor (for CI/CD tasks)
+feature-planner → other agents (for specialized implementation)
 pipeline-doctor → test-fixer (for test failures)
 test-runner → test-fixer (for test failures)
 ```
 
-The `test-fixer` agent is the specialist that other agents delegate to for test-related problems.
+The `feature-planner` orchestrates high-level planning and delegates implementation tasks to specialist agents.
