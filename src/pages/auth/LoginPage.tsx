@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../lib/auth/AuthContext";
 import { authApi } from "../../lib/api/auth";
+import { isDevelopmentMode } from "../../lib/env";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -9,8 +10,8 @@ export function LoginPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, bypassAuth } = useAuth();
-  const isDevMode = import.meta.env.DEV;
+  const { login, bypassAuth, setIsDevMode } = useAuth();
+  const isDevMode = isDevelopmentMode();
 
   const from = location.state?.from?.pathname || "/";
 
@@ -27,7 +28,8 @@ export function LoginPage() {
     }
   };
 
-  const handleDevBypass = () => {
+  const handleDevBypass = async () => {
+    await setIsDevMode(true);
     bypassAuth();
     navigate(from, { replace: true });
   };
