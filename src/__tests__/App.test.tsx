@@ -36,6 +36,7 @@ describe("App Component", () => {
       login: jest.fn(),
       logout: jest.fn(),
       bypassAuth: jest.fn(),
+      setIsDevMode: jest.fn(),
     });
   });
 

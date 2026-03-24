@@ -20,6 +20,7 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   bypassAuth: () => void;
+  setIsDevMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -78,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     bypassAuth,
+    setIsDevMode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

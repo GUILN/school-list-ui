@@ -1,3 +1,9 @@
+// Mock problematic modules before imports
+jest.mock("../../../lib/env", () => ({
+  isDevelopmentMode: () => false,
+  getApiUrl: () => "http://localhost:3000/api",
+}));
+
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
@@ -32,6 +38,7 @@ describe("LoginPage Component", () => {
       login: mockLogin,
       logout: jest.fn(),
       bypassAuth: mockBypassAuth,
+      setIsDevMode: jest.fn(),
     });
   });
 

@@ -30,11 +30,15 @@ export function getApiUrl(): string {
  * Compatible with both Vite and Jest environments
  */
 export function isDevelopmentMode(): boolean {
+  // In Vite environment (browser)
+  if (typeof import.meta !== "undefined" && import.meta.env) {
+    return import.meta.env.DEV;
+  }
+
   // In Node.js environment (Jest)
   if (typeof process !== "undefined" && process.env) {
     return process.env.NODE_ENV === "development";
   }
 
-  // Default fallback for tests
   return false;
 }

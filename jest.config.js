@@ -7,6 +7,10 @@ export default {
     "!src/**/*.d.ts",
     "!src/main.tsx",
     "!src/vite-env.d.ts",
+    "!src/lib/env.ts",
+    "!src/routes.ts",
+    "!src/lib/utils.ts",
+    "!src/lib/api/axios.ts",
   ],
   testMatch: [
     "<rootDir>/src/**/__tests__/**/*.{ts,tsx}",

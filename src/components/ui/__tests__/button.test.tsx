@@ -1,3 +1,14 @@
+// Mock problematic modules before imports
+jest.mock("@/lib/env", () => ({
+  isDevelopmentMode: () => false,
+  getApiUrl: () => "http://localhost:3000/api",
+}));
+
+jest.mock("@/lib/utils", () => ({
+  cn: (...args: any[]) => args.filter(Boolean).join(" "),
+  isDevelopmentMode: () => false,
+}));
+
 import { render, screen } from "@testing-library/react";
 import { Button } from "../button";
 
