@@ -1,6 +1,7 @@
 import routes from "@/routes";
 import { icons } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const SideMenuItem = (props: {
   name: string;
@@ -10,14 +11,15 @@ const SideMenuItem = (props: {
   const { elementIconName, name, path } = props;
   const LucideIcon = icons[elementIconName] ?? icons.House;
   return (
-    <li className="text-center grow h-max py-2 flex">
-      <div className="text-right ml-2 flex-none">
+    <li className="flex h-max grow items-center py-2 text-center">
+      <div className="ml-2 flex-none text-right text-muted-foreground">
         <LucideIcon />
       </div>
       <Link
-        className="bg-accent
-             text-center
-              hover:text-blue-400 hover:cursor-pointer rounded-sm mt-4 px-16 my-8 flex-1"
+        className={cn(
+          "my-8 mt-4 flex-1 rounded-sm bg-accent px-16 text-center text-accent-foreground transition-colors",
+          "hover:cursor-pointer hover:bg-background hover:text-primary",
+        )}
         to={path}
       >
         {name}
@@ -29,7 +31,7 @@ const SideMenuItem = (props: {
 const SideMenu = () => {
   return (
     <div className="pt-20">
-      <ul className="flex flex-col grow divide-y-2">
+      <ul className="flex grow flex-col divide-y-2 divide-border">
         {routes.map((route, i) => (
           <SideMenuItem
             name={route.name}

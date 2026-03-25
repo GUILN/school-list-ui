@@ -9,6 +9,14 @@ jest.mock("../side-menu", () => {
   };
 });
 
+jest.mock("@/components/ui/theme-toggle", () => ({
+  ThemeToggle: function MockThemeToggle() {
+    return (
+      <button aria-label="Switch to dark mode" data-testid="theme-toggle" />
+    );
+  },
+}));
+
 // Mock routes
 jest.mock("../../routes", () => [
   { path: "/", name: "Home" },
@@ -32,6 +40,7 @@ describe("MainLayout Component", () => {
 
     expect(screen.getByTestId("side-menu")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();
   });
 
   test("displays correct header title for home route", () => {
