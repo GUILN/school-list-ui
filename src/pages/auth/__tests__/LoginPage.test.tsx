@@ -1,10 +1,4 @@
-// Mock problematic modules before imports
-jest.mock("../../../lib/env", () => ({
-  isDevelopmentMode: () => false,
-  getApiUrl: () => "http://localhost:3000/api",
-}));
-
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { LoginPage } from "../LoginPage";
@@ -15,11 +9,22 @@ import { authApi } from "../../../lib/api/auth";
 jest.mock("../../../lib/auth/AuthContext");
 jest.mock("../../../lib/api/auth");
 
+const mockIsDevelopmentMode = jest.fn(() => false);
+jest.mock("../../../lib/env", () => ({
+  isDevelopmentMode: () => mockIsDevelopmentMode(),
+  getApiUrl: () => "http://localhost:3000/api",
+}));
+
 const mockNavigate = jest.fn();
+type MockLocationState = { from: { pathname: string } } | null;
+
+const mockUseLocation = jest.fn((): { state: MockLocationState } => ({
+  state: null,
+}));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
-  useLocation: () => ({ state: null }),
+  useLocation: () => mockUseLocation(),
 }));
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
@@ -28,9 +33,13 @@ const mockAuthApi = authApi as jest.Mocked<typeof authApi>;
 describe("LoginPage Component", () => {
   const mockLogin = jest.fn();
   const mockBypassAuth = jest.fn();
+  const mockSetIsDevMode = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockIsDevelopmentMode.mockReturnValue(false);
+    mockUseLocation.mockReturnValue({ state: null });
+    mockSetIsDevMode.mockResolvedValue(undefined);
     mockUseAuth.mockReturnValue({
       user: null,
       token: null,
@@ -38,7 +47,7 @@ describe("LoginPage Component", () => {
       login: mockLogin,
       logout: jest.fn(),
       bypassAuth: mockBypassAuth,
-      setIsDevMode: jest.fn(),
+      setIsDevMode: mockSetIsDevMode,
     });
   });
 
@@ -56,31 +65,13 @@ describe("LoginPage Component", () => {
     expect(
       screen.getByRole("heading", { name: /sign in to your account/i }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: /email address/i }),
+    ).toBeRequired();
+    expect(screen.getByLabelText(/password/i)).toBeRequired();
     expect(
       screen.getByRole("button", { name: /sign in/i }),
     ).toBeInTheDocument();
-  });
-
-  test("handles email input change", async () => {
-    const user = userEvent.setup();
-    renderLoginPage();
-
-    const emailInput = screen.getByLabelText(/email/i);
-    await user.type(emailInput, "test@example.com");
-
-    expect(emailInput).toHaveValue("test@example.com");
-  });
-
-  test("handles password input change", async () => {
-    const user = userEvent.setup();
-    renderLoginPage();
-
-    const passwordInput = screen.getByLabelText(/password/i);
-    await user.type(passwordInput, "password123");
-
-    expect(passwordInput).toHaveValue("password123");
   });
 
   test("submits login form successfully", async () => {
@@ -111,15 +102,41 @@ describe("LoginPage Component", () => {
 
     expect(mockLogin).toHaveBeenCalledWith("test-token");
     expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
+    expect(mockAuthApi.login.mock.invocationCallOrder[0]).toBeLessThan(
+      mockLogin.mock.invocationCallOrder[0],
+    );
+    expect(mockLogin.mock.invocationCallOrder[0]).toBeLessThan(
+      mockNavigate.mock.invocationCallOrder[0],
+    );
+  });
+
+  test("redirects to the original route after a successful login", async () => {
+    const user = userEvent.setup();
+    mockUseLocation.mockReturnValue({
+      state: { from: { pathname: "/schools" } },
+    });
+    mockAuthApi.login.mockResolvedValue({
+      token: "test-token",
+      user: { id: "1", email: "test@example.com", name: "Test User" },
+    });
+
+    renderLoginPage();
+
+    await user.type(
+      screen.getByLabelText(/email address/i),
+      "test@example.com",
+    );
+    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/schools", { replace: true });
+    });
   });
 
   test("displays error message on login failure", async () => {
     const user = userEvent.setup();
-    const errorMessage = "Invalid credentials";
-
-    mockAuthApi.login.mockRejectedValue({
-      response: { data: { message: errorMessage } },
-    });
+    mockAuthApi.login.mockRejectedValue(new Error("Invalid credentials"));
 
     renderLoginPage();
 
@@ -132,7 +149,9 @@ describe("LoginPage Component", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid email or password")).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Invalid email or password",
+      );
     });
   });
 
@@ -157,19 +176,43 @@ describe("LoginPage Component", () => {
   });
 
   test("shows dev bypass button in development mode", () => {
-    // We'll skip this test since it requires complex environment mocking
-    // In a real app, you'd mock the environment variable properly
-    expect(true).toBe(true);
+    mockIsDevelopmentMode.mockReturnValue(true);
+
+    renderLoginPage();
+
+    expect(
+      screen.getByRole("button", { name: /dev mode bypass/i }),
+    ).toBeInTheDocument();
   });
 
   test("handles dev bypass button click", async () => {
-    // Skip this test as it requires environment variable mocking
-    expect(true).toBe(true);
+    const user = userEvent.setup();
+    mockIsDevelopmentMode.mockReturnValue(true);
+    mockUseLocation.mockReturnValue({
+      state: { from: { pathname: "/dashboard" } },
+    });
+
+    renderLoginPage();
+
+    await user.click(screen.getByRole("button", { name: /dev mode bypass/i }));
+
+    expect(mockSetIsDevMode).toHaveBeenCalledWith(true);
+    expect(mockBypassAuth).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith("/dashboard", { replace: true });
+    expect(mockSetIsDevMode.mock.invocationCallOrder[0]).toBeLessThan(
+      mockBypassAuth.mock.invocationCallOrder[0],
+    );
+    expect(mockBypassAuth.mock.invocationCallOrder[0]).toBeLessThan(
+      mockNavigate.mock.invocationCallOrder[0],
+    );
   });
 
   test("does not show dev bypass button in production mode", () => {
-    // Skip this test as it requires environment variable mocking
-    expect(true).toBe(true);
+    renderLoginPage();
+
+    expect(
+      screen.queryByRole("button", { name: /dev mode bypass/i }),
+    ).not.toBeInTheDocument();
   });
 
   test("prevents submission with empty fields", async () => {
