@@ -1,57 +1,55 @@
 import routes from "@/routes";
 import { Route, Routes, useLocation } from "react-router-dom";
 import SideMenu from "./side-menu";
-import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const routesDict: Record<string, string> = {};
 routes.forEach((route) => (routesDict[route.path] = route.name));
+
 const MainLayout = () => {
-  const [headerTitle, setHeaderTitle] = useState("Title");
   const location = useLocation();
-  useEffect(() => setHeaderTitle(routesDict[location["pathname"]]), [location]);
+  const headerTitle = routesDict[location.pathname] ?? "";
+
   return (
-    <>
-      <div className="w-full h-svh max-h-svh flex">
-        <div className="h-full flex-1">
-          {/* main content area */}
-          <div className="flex flex-col justify-between overflow-y-scroll h-full">
-            <div className="sticky top-0 w-full">
-              {/* header */}
-              <div className="bg-primary py-5">
-                <h1
-                  className="text-center text-xl text-secondary"
-                  data-testid="main-header-title"
-                >
-                  {headerTitle}
-                </h1>
-              </div>
-            </div>
-            <div className="flex flex-1">
-              <div className="hidden h-full flex-[0.2] bg-secondary md:block">
-                {/* left side menu */}
-                <SideMenu />
-              </div>
-              <div className="h-full flex-1">
-                {/* content */}
-                <Routes>
-                  {routes.map((route, i) => (
-                    <Route
-                      path={route.path}
-                      key={i}
-                      Component={route.component}
-                    />
-                  ))}
-                </Routes>
+    <div className="flex h-svh max-h-svh w-full bg-background text-foreground">
+      <div className="h-full flex-1">
+        <div className="flex h-full flex-col justify-between overflow-y-scroll">
+          <div className="sticky top-0 z-10 w-full">
+            <div className="relative bg-primary px-4 py-5">
+              <h1
+                className="text-center text-xl text-primary-foreground"
+                data-testid="main-header-title"
+              >
+                {headerTitle}
+              </h1>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <ThemeToggle className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" />
               </div>
             </div>
           </div>
-          <div className="sticky top-0 block bg-pink-500 py-5 md:hidden">
-            {/* Botton Navigation for Small Screens */}
+          <div className="flex flex-1">
+            <div className="hidden h-full flex-[0.2] border-r bg-secondary md:block">
+              <SideMenu />
+            </div>
+            <div className="h-full flex-1">
+              <Routes>
+                {routes.map((route, i) => (
+                  <Route
+                    path={route.path}
+                    key={i}
+                    Component={route.component}
+                  />
+                ))}
+              </Routes>
+            </div>
+          </div>
+          <div className="sticky top-0 block border-t bg-secondary py-5 text-secondary-foreground md:hidden">
             <h1 className="text-center text-xl">Bottom Navigation</h1>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default MainLayout;

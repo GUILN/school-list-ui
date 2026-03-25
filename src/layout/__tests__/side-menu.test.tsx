@@ -1,3 +1,8 @@
+jest.mock("@/lib/utils", () => ({
+  cn: (...args: any[]) => args.filter(Boolean).join(" "),
+  isDevelopmentMode: () => false,
+}));
+
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import SideMenu from "../side-menu";
