@@ -11,6 +11,13 @@ This workspace has specialized agents for different development tasks.
 
 Analyzes GitHub issues and features, understands codebase context, and breaks down complex work into actionable tasks that can be delegated to specialist agents.
 
+### ui-developer
+
+**Specialization**: React/TypeScript frontend implementation  
+**Use when**: React component development, TypeScript frontend implementation, UI feature development, styling and layout, React hooks and state management, component testing, frontend GitHub issue implementation
+
+Specialized in implementing React/TypeScript UI features following project conventions, integrating with existing components and design systems.
+
 ### test-fixer
 
 **Specialization**: React Testing Library and Jest test fixing
@@ -36,6 +43,8 @@ Runs tests and delegates any failures to the test-fixer agent.
 
 - **"Analyze this GitHub issue: https://github.com/..."** → Invokes `feature-planner` for task breakdown
 - **"Break down this feature into tasks"** → Invokes `feature-planner` for planning
+- **"Implement this UI feature: [GitHub URL]"** → Invokes `ui-developer` for React implementation
+- **"Create a new component for [purpose]"** → Invokes `ui-developer` for component development
 - **"Fix my failing tests"** → Invokes `test-fixer` directly
 - **"My pipeline is failing"** → Invokes `pipeline-doctor` who diagnoses and delegates
 - **"Run the test suite"** → Invokes `test-runner` who executes and handles failures
@@ -43,11 +52,12 @@ Runs tests and delegates any failures to the test-fixer agent.
 ## Agent Relationships
 
 ```
+feature-planner → ui-developer (for frontend implementation tasks)
 feature-planner → test-fixer (for test-related tasks)
 feature-planner → pipeline-doctor (for CI/CD tasks)
-feature-planner → other agents (for specialized implementation)
+ui-developer → test-fixer (for component testing)
 pipeline-doctor → test-fixer (for test failures)
 test-runner → test-fixer (for test failures)
 ```
 
-The `feature-planner` orchestrates high-level planning and delegates implementation tasks to specialist agents.
+The `feature-planner` orchestrates high-level planning and delegates implementation tasks to specialist agents like `ui-developer`.
