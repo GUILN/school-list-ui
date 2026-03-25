@@ -32,6 +32,13 @@ Specialized in React/TypeScript/Vite/Jest test environments.
 
 Diagnoses issues and delegates to appropriate specialist agents.
 
+### github-actions-specialist
+
+**Specialization**: GitHub Actions workflow authoring and debugging
+**Use when**: GitHub Actions workflow authoring, workflow debugging, failed run investigation, job log analysis, permissions issues, matrix strategy updates, caching, artifacts, and release automation
+
+Specialized in creating, reviewing, and fixing GitHub Actions workflows while keeping CI/CD behavior reliable and maintainable.
+
 ### test-runner
 
 **Specialization**: Test execution and failure delegation  
@@ -47,6 +54,7 @@ Runs tests and delegates any failures to the test-fixer agent.
 - **"Create a new component for [purpose]"** → Invokes `ui-developer` for component development
 - **"Fix my failing tests"** → Invokes `test-fixer` directly
 - **"My pipeline is failing"** → Invokes `pipeline-doctor` who diagnoses and delegates
+- **"Debug this GitHub Actions workflow"** → Invokes `github-actions-specialist` for workflow analysis or authoring
 - **"Run the test suite"** → Invokes `test-runner` who executes and handles failures
 
 ## Agent Relationships
@@ -55,8 +63,11 @@ Runs tests and delegates any failures to the test-fixer agent.
 feature-planner → ui-developer (for frontend implementation tasks)
 feature-planner → test-fixer (for test-related tasks)
 feature-planner → pipeline-doctor (for CI/CD tasks)
+feature-planner → github-actions-specialist (for workflow automation tasks)
 ui-developer → test-fixer (for component testing)
 pipeline-doctor → test-fixer (for test failures)
+github-actions-specialist → pipeline-doctor (for broader CI/CD diagnosis)
+github-actions-specialist → test-fixer (for test failures surfaced by CI)
 test-runner → test-fixer (for test failures)
 ```
 
