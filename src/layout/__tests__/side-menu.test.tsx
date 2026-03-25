@@ -4,7 +4,8 @@ jest.mock("@/lib/utils", () => ({
 }));
 
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import SideMenu from "../side-menu";
 
 // Mock lucide-react icons with proper icons object structure
@@ -20,26 +21,64 @@ jest.mock("lucide-react", () => ({
 
 // Mock routes
 jest.mock("../../routes", () => [
-  { path: "/", name: "Home", iconName: "House" },
-  { path: "/user-profile", name: "Meu Perfil", iconName: "User" },
-  { path: "/user-address", name: "Endereços", iconName: "Building" },
+  {
+    path: "/",
+    name: "Home",
+    iconName: "House",
+    component: () => <div>Home page</div>,
+  },
+  {
+    path: "/user-profile",
+    name: "Meu Perfil",
+    iconName: "User",
+    component: () => <div>Meu Perfil page</div>,
+  },
+  {
+    path: "/user-address",
+    name: "Endereços",
+    iconName: "Building",
+    component: () => <div>Endereços page</div>,
+  },
   {
     path: "/create-school-list",
     name: "Criar Lista de Escolas",
     iconName: "School",
+    component: () => <div>Criar Lista de Escolas page</div>,
   },
   {
     path: "/print-school-list",
     name: "Imprimir Lista de Escolas",
     iconName: "Printer",
+    component: () => <div>Imprimir Lista de Escolas page</div>,
   },
 ]);
+
+import routes from "../../routes";
 
 describe("SideMenu Component", () => {
   const renderSideMenu = (initialEntries = ["/"]) => {
     return render(
       <MemoryRouter initialEntries={initialEntries}>
         <SideMenu />
+      </MemoryRouter>,
+    );
+  };
+
+  const renderSideMenuWithRoutes = (initialEntries = ["/"]) => {
+    return render(
+      <MemoryRouter initialEntries={initialEntries}>
+        <div>
+          <SideMenu />
+          <Routes>
+            {routes.map((route) => (
+              <Route
+                Component={route.component}
+                key={route.path}
+                path={route.path}
+              />
+            ))}
+          </Routes>
+        </div>
       </MemoryRouter>,
     );
   };
@@ -94,19 +133,28 @@ describe("SideMenu Component", () => {
     const activeLink = screen.getByRole("link", { name: /meu perfil/i });
     const otherLink = screen.getByRole("link", { name: /home/i });
 
-    // Both links should be rendered regardless of current route
     expect(activeLink).toBeInTheDocument();
     expect(otherLink).toBeInTheDocument();
+    expect(activeLink).toHaveAttribute("aria-current", "page");
+    expect(otherLink).not.toHaveAttribute("aria-current");
   });
 
-  test("renders items in correct order", () => {
-    renderSideMenu();
+  test("navigates to the selected route from the desktop sidebar", async () => {
+    const user = userEvent.setup();
 
-    const menuItems = screen.getAllByRole("link");
-    expect(menuItems[0]).toHaveTextContent("Home");
-    expect(menuItems[1]).toHaveTextContent("Meu Perfil");
-    expect(menuItems[2]).toHaveTextContent("Endereços");
-    expect(menuItems[3]).toHaveTextContent("Criar Lista de Escolas");
-    expect(menuItems[4]).toHaveTextContent("Imprimir Lista de Escolas");
+    renderSideMenuWithRoutes();
+
+    expect(screen.getByText("Home page")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("link", { name: /meu perfil/i }));
+
+    expect(screen.getByText("Meu Perfil page")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /meu perfil/i })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: /home/i })).not.toHaveAttribute(
+      "aria-current",
+    );
   });
 });

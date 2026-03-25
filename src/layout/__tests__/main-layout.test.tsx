@@ -1,4 +1,10 @@
+jest.mock("@/lib/utils", () => ({
+  cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
+  isDevelopmentMode: () => false,
+}));
+
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import MainLayout from "../main-layout";
 
@@ -19,11 +25,36 @@ jest.mock("@/components/ui/theme-toggle", () => ({
 
 // Mock routes
 jest.mock("../../routes", () => [
-  { path: "/", name: "Home" },
-  { path: "/user-profile", name: "Meu Perfil" },
-  { path: "/user-address", name: "Endereços" },
-  { path: "/create-school-list", name: "Criar Lista de Escolas" },
-  { path: "/print-school-list", name: "Imprimir Lista de Escolas" },
+  {
+    path: "/",
+    name: "Home",
+    iconName: "House",
+    component: () => <div>Home page</div>,
+  },
+  {
+    path: "/user-profile",
+    name: "Meu Perfil",
+    iconName: "User",
+    component: () => <div>Meu Perfil page</div>,
+  },
+  {
+    path: "/user-address",
+    name: "Endereços",
+    iconName: "Building",
+    component: () => <div>Endereços page</div>,
+  },
+  {
+    path: "/create-school-list",
+    name: "Criar Lista de Escolas",
+    iconName: "School",
+    component: () => <div>Criar Lista de Escolas page</div>,
+  },
+  {
+    path: "/print-school-list",
+    name: "Imprimir Lista de Escolas",
+    iconName: "Printer",
+    component: () => <div>Imprimir Lista de Escolas page</div>,
+  },
 ]);
 
 describe("MainLayout Component", () => {
@@ -41,64 +72,109 @@ describe("MainLayout Component", () => {
     expect(screen.getByTestId("side-menu")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /home/i })).toBeInTheDocument();
     expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();
+    expect(screen.getByText("Home page")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /open navigation menu/i }),
+    ).toBeInTheDocument();
   });
 
-  test("displays correct header title for home route", () => {
-    renderMainLayout("/");
-    expect(screen.getByText("Home")).toBeInTheDocument();
-  });
+  test.each([
+    ["/", "Home", "Home page"],
+    ["/user-profile", "Meu Perfil", "Meu Perfil page"],
+    ["/user-address", "Endereços", "Endereços page"],
+    [
+      "/create-school-list",
+      "Criar Lista de Escolas",
+      "Criar Lista de Escolas page",
+    ],
+    [
+      "/print-school-list",
+      "Imprimir Lista de Escolas",
+      "Imprimir Lista de Escolas page",
+    ],
+  ])(
+    "keeps the expected title and route content for %s",
+    (initialPath, expectedTitle, expectedContent) => {
+      renderMainLayout(initialPath);
 
-  test("displays correct header title for user profile route", () => {
-    renderMainLayout("/user-profile");
-    expect(screen.getByText("Meu Perfil")).toBeInTheDocument();
-  });
-
-  test("displays correct header title for user address route", () => {
-    renderMainLayout("/user-address");
-    expect(screen.getByText("Endereços")).toBeInTheDocument();
-  });
-
-  test("displays correct header title for create school list route", () => {
-    renderMainLayout("/create-school-list");
-    expect(screen.getByText("Criar Lista de Escolas")).toBeInTheDocument();
-  });
-
-  test("displays correct header title for print school list route", () => {
-    renderMainLayout("/print-school-list");
-    expect(screen.getByText("Imprimir Lista de Escolas")).toBeInTheDocument();
-  });
+      expect(screen.getByTestId("main-header-title")).toHaveTextContent(
+        expectedTitle,
+      );
+      expect(screen.getByText(expectedContent)).toBeInTheDocument();
+    },
+  );
 
   test("displays default title for unknown route", () => {
     renderMainLayout("/unknown-route");
-    // For unknown routes, the headerTitle will be undefined, check the main header title specifically
     const mainTitleElement = screen.getByTestId("main-header-title");
+
     expect(mainTitleElement).toBeInTheDocument();
-    expect(mainTitleElement).toHaveTextContent(""); // Should be empty for unknown routes
+    expect(mainTitleElement).toHaveTextContent("");
   });
 
   test("updates header title when route changes", () => {
-    // Test home route
     const { unmount: unmountHome } = renderMainLayout("/");
-    const mainTitleElement = screen.getByTestId("main-header-title");
-    expect(mainTitleElement).toHaveTextContent("Home");
+
+    expect(screen.getByTestId("main-header-title")).toHaveTextContent("Home");
     unmountHome();
 
-    // Test user-profile route
     renderMainLayout("/user-profile");
-    const profileTitleElement = screen.getByTestId("main-header-title");
-    expect(profileTitleElement).toHaveTextContent("Meu Perfil");
+
+    expect(screen.getByTestId("main-header-title")).toHaveTextContent(
+      "Meu Perfil",
+    );
   });
 
-  test("renders routes correctly", () => {
+  test("opens and closes the mobile navigation drawer", async () => {
+    const user = userEvent.setup();
+
     renderMainLayout();
-    // Check that both header elements are rendered
-    expect(screen.getByText("Home")).toBeInTheDocument(); // Main title for home route
-    expect(screen.getByText("Bottom Navigation")).toBeInTheDocument(); // Bottom nav header
+
+    const openButton = screen.getByRole("button", {
+      name: /open navigation menu/i,
+    });
+
+    expect(openButton).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(openButton);
+
+    expect(
+      screen.getByRole("dialog", { name: /navigation menu/i }),
+    ).toBeVisible();
+    expect(openButton).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(
+      screen.getByRole("button", { name: /close navigation menu/i }),
+    );
+
+    expect(openButton).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.getByRole("dialog", { hidden: true, name: /navigation menu/i }),
+    ).toHaveClass("-translate-x-full");
+  });
+
+  test("closes the mobile drawer when a navigation item is selected", async () => {
+    const user = userEvent.setup();
+
+    renderMainLayout();
+
+    await user.click(
+      screen.getByRole("button", { name: /open navigation menu/i }),
+    );
+    await user.click(screen.getByRole("link", { name: /meu perfil/i }));
+
+    expect(screen.getByTestId("main-header-title")).toHaveTextContent(
+      "Meu Perfil",
+    );
+    expect(screen.getByText("Meu Perfil page")).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { hidden: true, name: /navigation menu/i }),
+    ).toHaveClass("-translate-x-full");
   });
 
   test("has correct layout classes", () => {
     const { container } = renderMainLayout();
-    const layoutDiv = container.querySelector(".w-full.h-svh.max-h-svh.flex");
+    const layoutDiv = container.querySelector(".flex.min-h-svh.w-full");
 
     expect(layoutDiv).toBeInTheDocument();
     expect(layoutDiv).toHaveClass("flex");
