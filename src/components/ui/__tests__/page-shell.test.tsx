@@ -82,4 +82,31 @@ describe("page shell primitives", () => {
     expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Salvar" })).toBeInTheDocument();
   });
+
+  test("renders shared primitives without optional actions or descriptions", () => {
+    render(
+      <PageShell>
+        <PageHeader title="Página simples" description="Descrição simples" />
+        <PageSection title="Seção simples">
+          <PageCard>
+            <PageCardHeader title="Card simples" />
+            <PageCardContent>
+              <p>Conteúdo essencial</p>
+            </PageCardContent>
+          </PageCard>
+        </PageSection>
+      </PageShell>,
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Página simples" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Seção simples" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 4, name: "Card simples" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Conteúdo essencial")).toBeInTheDocument();
+  });
 });

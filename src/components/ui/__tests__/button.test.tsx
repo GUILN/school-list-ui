@@ -71,4 +71,16 @@ describe("Button Component", () => {
     const button = screen.getByRole("button", { name: /disabled/i });
     expect(button).toBeDisabled();
   });
+
+  test("renders as a child element when asChild is true", () => {
+    render(
+      <Button asChild>
+        <a href="/destino">Ir para destino</a>
+      </Button>,
+    );
+
+    expect(
+      screen.getByRole("link", { name: /ir para destino/i }),
+    ).toHaveAttribute("href", "/destino");
+  });
 });

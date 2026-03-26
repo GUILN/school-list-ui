@@ -68,6 +68,20 @@ describe("ThemeContext", () => {
     expect(window.localStorage.getItem("theme")).toBe("dark");
   });
 
+  test("falls back to light theme when persisted theme is invalid", () => {
+    window.localStorage.setItem("theme", "sepia");
+
+    render(
+      <ThemeProvider>
+        <ThemeConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByText("light")).toBeInTheDocument();
+    expect(document.documentElement).not.toHaveClass("dark");
+    expect(window.localStorage.getItem("theme")).toBe("light");
+  });
+
   test("toggles the dark class and persists theme changes", () => {
     render(
       <ThemeProvider>
@@ -84,5 +98,13 @@ describe("ThemeContext", () => {
     expect(screen.getByText("dark")).toBeInTheDocument();
     expect(document.documentElement).toHaveClass("dark");
     expect(window.localStorage.getItem("theme")).toBe("dark");
+  });
+
+  test("throws when useTheme is called outside a provider", () => {
+    const renderWithoutProvider = () => render(<ThemeConsumer />);
+
+    expect(renderWithoutProvider).toThrow(
+      "useTheme must be used within a ThemeProvider",
+    );
   });
 });
