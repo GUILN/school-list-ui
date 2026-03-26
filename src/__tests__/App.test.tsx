@@ -1,9 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import App from "../App";
-import { useAuth } from "../lib/auth/AuthContext";
 
-// Mock all dependencies
-jest.mock("../lib/auth/AuthContext");
+jest.mock("../lib/auth/AuthContext", () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="auth-provider">{children}</div>
+  ),
+}));
+jest.mock("../lib/theme/ThemeContext", () => ({
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="theme-provider">{children}</div>
+  ),
+}));
 jest.mock("../layout/main-layout", () => {
   return function MockMainLayout() {
     return <div data-testid="main-layout">Main Layout</div>;
@@ -24,45 +31,28 @@ jest.mock("../components/auth/ProtectedRoute", () => ({
   },
 }));
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
-
 describe("App Component", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockUseAuth.mockReturnValue({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      login: jest.fn(),
-      logout: jest.fn(),
-      bypassAuth: jest.fn(),
-      setIsDevMode: jest.fn(),
-    });
+    window.history.pushState({}, "", "/");
   });
 
-  test("renders app with router", () => {
+  test("renders the protected shell for non-login routes", () => {
     render(<App />);
 
-    // App should render without crashing - this is the main goal
-    expect(document.body).toBeInTheDocument();
+    expect(screen.getByTestId("theme-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("auth-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("protected-route")).toBeInTheDocument();
+    expect(screen.getByTestId("main-layout")).toBeInTheDocument();
   });
 
-  test("provides AuthProvider context to children", () => {
-    render(<App />);
-
-    // Simply verify that the app renders successfully with AuthProvider
-    // The presence of mocked components confirms the providers are working
-    expect(document.body).toBeInTheDocument();
-  });
-
-  test("renders router with correct structure", () => {
-    // Mock window.location for routing
-    delete (window as any).location;
-    (window as any).location = new URL("http://localhost/login");
+  test("renders the login route at /login", () => {
+    window.history.pushState({}, "", "/login");
 
     render(<App />);
 
-    // Router should be present (confirmed by successful render)
-    expect(document.body).toBeInTheDocument();
+    expect(screen.getByTestId("theme-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("auth-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("login-page")).toBeInTheDocument();
+    expect(screen.queryByTestId("protected-route")).not.toBeInTheDocument();
   });
 });
